@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: transaction-management
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: INFO
+    com.hsbc: DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    persist-authorization: true
+    enabled: ${swagger.enabled:true}
+  api-docs:
+    path: /v3/api-docs
+    enabled: ${swagger.enabled:true}
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json

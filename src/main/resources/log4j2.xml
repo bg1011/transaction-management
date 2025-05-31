@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <!-- Define variables -->
+    <Properties>
+        <!-- Log output format -->
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+
+        <!-- Log file path -->
+        <Property name="LOG_DIR">logs</Property>
+
+        <!-- Application name -->
+        <Property name="APP_NAME">transaction-service</Property>
+
+        <!-- Maximum size of a single log file -->
+        <Property name="MAX_FILE_SIZE">50MB</Property>
+
+        <!-- Maximum number of days to keep logs -->
+        <Property name="MAX_HISTORY_DAYS">30</Property>
+    </Properties>
+
+    <!-- Define Appenders -->
+    <Appenders>
+        <!-- Console output -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- Regular log file output -->
+        <RollingFile name="File" fileName="${LOG_DIR}/${APP_NAME}.log"
+                     filePattern="${LOG_DIR}/${APP_NAME}-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <!-- Time-based rolling (daily) -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- Size-based rolling -->
+                <SizeBasedTriggeringPolicy size="${MAX_FILE_SIZE}"/>
+            </Policies>
+            <!-- Number of log files to keep -->
+            <DefaultRolloverStrategy max="${MAX_HISTORY_DAYS}"/>
+        </RollingFile>
+
+        <!-- Error logs separate output -->
+        <RollingFile name="ErrorFile" fileName="${LOG_DIR}/${APP_NAME}-error.log"
+                     filePattern="${LOG_DIR}/${APP_NAME}-error-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${MAX_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${MAX_HISTORY_DAYS}"/>
+        </RollingFile>
+
+        <!-- Async log buffer -->
+        <Async name="Async" bufferSize="1024">
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Async>
+    </Appenders>
+
+    <!-- Define Loggers -->
+    <Loggers>
+        <!-- Third-party library log level control -->
+        <Logger name="org.springframework" level="INFO"/>
+        <Logger name="org.hibernate" level="WARN"/>
+        <Logger name="com.zaxxer.hikari" level="INFO"/>
+
+        <!-- Business package log level -->
+        <Logger name="com.bank.transaction" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Async"/>
+        </Logger>
+
+        <!-- Root Logger configuration -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Async"/>
+        </Root>
+    </Loggers>
+</Configuration>

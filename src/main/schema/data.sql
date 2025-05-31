@@ -1,0 +1,10 @@
+-- schema.sql
+DROP TABLE IF EXISTS transactions;
+
+CREATE TABLE transactions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    amount DECIMAL(19,2) NOT NULL,
+    type VARCHAR(10) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
